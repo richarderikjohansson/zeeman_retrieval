@@ -1,0 +1,8 @@
+name: simulation
+channels:
+  - conda-forge
+  - defaults
+  - rttools
+dependencies:
+  - pyarts=2.6.10
+  - h5py=3.12.1
