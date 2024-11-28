@@ -6,6 +6,16 @@ import numpy as np
 import matplotlib as mpl
 
 def read_hdf5(filename):
+    """
+    Function to read .hdf5 file
+
+    Parameters:
+    filename (str) : path to the file
+
+    Returns:
+    (dct) : dictionary with magnetic field strength and datetime
+
+    """
     with h5py.File(filename, "r") as file:
         start = file["start"][()].decode("utf-8") #pyright:ignore
         end = file["end"][()].decode("utf-8") #pyright:ignore
@@ -18,6 +28,17 @@ def read_hdf5(filename):
 
 
 def make_date(start, end):
+    """
+    Function to create a date range
+
+    Parameters:
+    start (str) : start date of in YYMMDD
+    end (str) : end date in YYMMDD
+
+
+    Returns:
+    date_range (np.array) : numpy array containing datetimes
+    """
     dt_start = datetime.strptime(start, "%y%m%d")
     dt_end= datetime.strptime(end, "%y%m%d")
     date_range = []
@@ -29,6 +50,8 @@ def make_date(start, end):
     return np.array(date_range)
 
 bfield = read_hdf5(filename="hdf5/magfield/magfield.hdf5")
+
+# fill boundaries associated wit measurement
 fills = {
     "a":(datetime(year=2024,month=1,day=4, hour=3, minute=35, second=9),
          datetime(year=2024,month=1,day=4, hour=4, minute=35, second=9)),
@@ -41,6 +64,7 @@ fills = {
 
 }
 
+# plot magfield strength with fills corresponding to KIMRA measurements
 fig, ax = plt.subplots(figsize=(14,5))
 formatter = mpl.dates.DateFormatter("%H") #pyright:ignore
 ax.xaxis.set_major_formatter(formatter)
