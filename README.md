@@ -50,7 +50,7 @@ in these fields are the following:
 | azi               |  Azimuth angle in °|
 
 
-### Measurements 
+### KIMRA Measurements 
 
 As for the simulations are the measurements also saved in hdf format and can also be read with the h5py library. The files
 are associated according the following:
@@ -82,3 +82,35 @@ The data is saved under the key "kimra_data" and holds the following keys:
 | y                 |  spectra in brightness temperature |
 | z_field           |  altitude grid calculated from the pressure grid
 |za                 |  zenith angle for the line of sight |
+
+### Magnetic field measurements
+
+The magnetic field measurements are being conducted continuously at IRF and we are 
+interested in the strength of the magnetic field since it influences the line split 
+in the Zeeman splitted transition
+
+| Filename                                | Description                 | 
+| --------------------------------------  | --------------------------- |
+| kir202401dsec.sec                       |  Raw data file from magnetic field measurement for the whole month of January 2024 in UTC|   
+| magfield.hdf5                           |  File containing data only from January 4th to 5th and shifted from UTC to CET|   
+
+The file kir202401dsec.sec hold the following information
+
+
+| Key name          | Description                 | 
+| ----------------  | --------------------------- |
+| DATE              |  date of the measurement  |   
+| TIME              |  time of the measurement in UTC|
+| DOY               |  day of year for the measurement |
+| KIRX              |  X component of the magnetif field in nT () |
+| KIRY              |  Y component of the magnetic field in nT ()|
+| KIRZ              |  Z component of the magnetic field in nT ()|
+| KIRF              |  magnetic field strength in nT|
+
+The file magfield.hdf5 hold the following 
+
+| Key name          | Description                 | 
+| ----------------  | --------------------------- |
+| bfield            |  magnetic field strength    |   
+| start             |  start date of the measurement|
+| end               |  end date for the measurement|
