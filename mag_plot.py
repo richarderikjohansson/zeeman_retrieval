@@ -49,9 +49,11 @@ def make_date(start, end):
         current_date += timedelta(seconds=1)
     return np.array(date_range)
 
-bfield = read_hdf5(filename="hdf5/magfield/magfield.hdf5")
+# --- driver code ---
 
-# fill boundaries associated wit measurement
+bfield = read_hdf5(filename="data/magfield/240104/magfield.hdf5")
+
+# fill-boundaries associated with measurement
 fills = {
     "a":(datetime(year=2024,month=1,day=4, hour=3, minute=35, second=9),
          datetime(year=2024,month=1,day=4, hour=4, minute=35, second=9)),

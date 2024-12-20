@@ -81,9 +81,10 @@ f0 = 233.9461e9 # linecenter
 s = 4635 # index where frequency is -15 MHz from linecenter
 e = 5028 # index where frequency is 15 MHz from linecenter
 
+
 # list comprehensions to read all data
 simulations = [read_hdf5("data/simulation/"+file) for file in sorted(os.listdir("data/simulation"))]
-measurements = [read_hdf5("data/measurements/"+file) for file in sorted(os.listdir("data/measurements"))]
+measurements = [read_hdf5("data/measurements/240104/"+file) for file in sorted(os.listdir("data/measurements/240104"))]
 
 # subplots all directions
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2, nrows=2, figsize=(15,9), sharey=True, sharex=True)
@@ -98,6 +99,8 @@ ax1.minorticks_on()
 ax1.grid(which='major', color='black', linestyle='-', linewidth=0.75, alpha=.2)
 ax1.grid(which='minor', color='gray', linestyle=':', linewidth=0.5, alpha=.2)
 ax1.text(0.10,0.90, r"$(a)$", transform=ax1.transAxes,fontsize=17,color="black", verticalalignment="top")
+ax1.text(0.67,0.75, fr"$\phi\;=${round(measurements[0]["azimuth"])}$^\circ$", transform=ax1.transAxes,fontsize=13,color="black", verticalalignment="top")
+ax1.text(0.67,0.67, fr"$\theta_z=${measurements[0]["za"]}$^\circ$", transform=ax1.transAxes,fontsize=13,color="black", verticalalignment="top")
 
 # phi = 180
 ax2.plot((measurements[1]["f"][s:e]-f0)/1e6, mm_scaler(measurements[1]["y"][s:e]), label="Measurement", color="black")
@@ -108,6 +111,8 @@ ax2.minorticks_on()
 ax2.grid(which='major', color='black', linestyle='-', linewidth=0.75, alpha=.2)
 ax2.grid(which='minor', color='gray', linestyle=':', linewidth=0.5, alpha=.2)
 ax2.text(0.10,0.90, r"$(b)$", transform=ax2.transAxes,fontsize=17,color="black", verticalalignment="top")
+ax2.text(0.67,0.75, fr"$\phi\;=${round(measurements[1]["azimuth"])}$^\circ$", transform=ax2.transAxes,fontsize=13,color="black", verticalalignment="top")
+ax2.text(0.67,0.67, fr"$\theta_z=${measurements[1]["za"]}$^\circ$", transform=ax2.transAxes,fontsize=13,color="black", verticalalignment="top")
 
 # phi = 90
 ax3.plot((measurements[2]["f"][s:e]-f0)/1e6, mm_scaler(measurements[2]["y"][s:e]), label="Measurement", color="black")
@@ -120,6 +125,8 @@ ax3.minorticks_on()
 ax3.grid(which='major', color='black', linestyle='-', linewidth=0.75, alpha=.2)
 ax3.grid(which='minor', color='gray', linestyle=':', linewidth=0.5, alpha=.2)
 ax3.text(0.10,0.90, r"$(c)$", transform=ax3.transAxes,fontsize=17,color="black", verticalalignment="top")
+ax3.text(0.68,0.75, fr"$\phi\;=${round(measurements[2]["azimuth"])}$^\circ$", transform=ax3.transAxes,fontsize=13,color="black", verticalalignment="top")
+ax3.text(0.68,0.67, fr"$\theta_z=${measurements[2]["za"]}$^\circ$", transform=ax3.transAxes,fontsize=13,color="black", verticalalignment="top")
 
 # phi = 270
 ax4.plot((measurements[3]["f"][s:e]-f0)/1e6, mm_scaler(measurements[3]["y"][s:e]), label="Measurement", color="black")
@@ -131,6 +138,8 @@ ax4.minorticks_on()
 ax4.grid(which='major', color='black', linestyle='-', linewidth=0.75, alpha=.2)
 ax4.grid(which='minor', color='gray', linestyle=':', linewidth=0.5, alpha=.2)
 ax4.text(0.10,0.90, r"$(d)$", transform=ax4.transAxes,fontsize=17,color="black", verticalalignment="top")
+ax4.text(0.68,0.75, fr"$\phi\;=${round(measurements[3]["azimuth"])+360}$^\circ$", transform=ax4.transAxes,fontsize=13,color="black", verticalalignment="top")
+ax4.text(0.68,0.67, fr"$\theta_z=${measurements[3]["za"]}$^\circ$", transform=ax4.transAxes,fontsize=13,color="black", verticalalignment="top")
 plt.tight_layout()
 
 fig.savefig("imgs/allsubs.pdf")

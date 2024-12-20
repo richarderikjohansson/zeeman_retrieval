@@ -61,6 +61,7 @@ are associated according the following:
 | Data_2024-01-04_05-36-27_RPGFFTS.hdf5   |  Measurement at 180° azimuth angle (South)|   
 | Data_2024-01-04_15-06-38_RPGFFTS.hdf5   |  Measurement at 90° azimuth angle (East)|   
 | Data_2024-01-04_16-07-17_RPGFFTS.hdf5   |  Measurement at 270° azimuth angle (West)|   
+| kimra_RPGFFTS_2023-12-02_01-40-04.hdf5  |  Measurement at 90° azimuth angle (East)|   
 
 
 The data is saved under the key "kimra_data" and holds the following keys:
@@ -92,7 +93,9 @@ in the Zeeman splitted transition
 | Filename                                | Description                 | 
 | --------------------------------------  | --------------------------- |
 | kir202401dsec.sec                       |  Raw data file from magnetic field measurement for the whole month of January 2024 in UTC|   
-| magfield.hdf5                           |  File containing data only from January 4th to 5th and shifted from UTC to CET|   
+| magfield.hdf5                           |  File containing data only from January 4th to 5th, 2024 and shifted from UTC to CET|   
+| kir202302dsec.sec                       |  Raw data file from magnetic field measurement for the whole month of January 2024 in UTC|   
+| magfield.hdf5                           |  File containing data only from Demember 2 to 3, 2023 and shifted from UTC to CET|   
 
 The file kir202401dsec.sec hold the following information
 
