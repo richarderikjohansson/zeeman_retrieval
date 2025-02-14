@@ -1,0 +1,9 @@
+{
+  "species":["O2-68-233586117200.0-234306169700.0", "O3-*-233586117200.0-234306169700.0","O2-PWR98" ,"H2O-PWR98" ],
+  "abs_file":"abs_lines_per_species_zeeman_off.xml",
+  "filename":"ret_zeeman_off.hdf5",
+  "start":233596117200.0,
+  "end":234296169700.0,
+  "flag":false,
+  "instrument_pol":false
+}
