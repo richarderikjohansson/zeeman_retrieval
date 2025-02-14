@@ -99,7 +99,7 @@ def oem_O2_O3(filename, config):
     arts.ReadXML(arts.abs_lines_per_species, config["abs_file"])
     y = data["I"] - data["Q"]
     f = data["f"]
-    noise = np.random.normal(0, 0.05, len(y))
+    noise = np.random.normal(0, 0.08, len(y))
     arts.y = y + noise
     arts.f_grid = f
     arts.f_backend = arts.f_grid
