@@ -125,9 +125,11 @@ def oem_O2_O3(filename, config):
     ###############################################################################
 
     arts.AtmRawRead(basename=ATMBASE)
+    t_raw_iter = pyarts.xml.load(ROOT + "/data/grids/24010418_t.xml")
+    t_raw = [val for val in t_raw_iter]
     data = pyarts.arts.GriddedField3(
         [p_a, [0], [0]],
-        np.array(x_a).reshape(len(p_a), 1, 1),
+        np.array(t_raw).reshape(len(p_a), 1, 1),
         gridnames=["Pressure", "Latitude", "Longitude"],
     )
 
