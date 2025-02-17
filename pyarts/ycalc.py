@@ -3,12 +3,16 @@ import pyarts
 import sys
 import os
 import h5py
+from datetime import datetime
 
 # Global
 ROOT = sys.argv[1]
 ATMBASE = f"{ROOT}/catalogue/subarctic-winter/subarctic-winter"
 START = 233596117200.0
 END = 234296169700.0
+
+sys.path.append(f"{ROOT}/utils")
+from utils.temperature import get_temperature
 
 # --- functions ---
 def save_ycalc(I, Q, U, V, f, filename):
@@ -110,7 +114,9 @@ def ycalc(zeeman):
     ws.lon_grid = np.linspace(10, 30)
     ws.refellipsoidEarth(model="Sphere")
     ws.z_surfaceConstantAltitude(altitude=410)
-    ws.t_surface = 293.15 + np.ones_like(ws.z_surface.value)
+    dt = datetime.strptime("24010418", "%y%m%d%H")
+    temperature = get_temperature(dt)
+    ws.t_surface = temperature + np.ones_like(ws.z_surface.value)
 
     # %% Atmosphere
     ws.AtmRawRead(basename=ATMBASE)
