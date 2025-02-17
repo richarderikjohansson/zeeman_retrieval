@@ -59,7 +59,6 @@ def ycalc(zeeman):
             "O2-PWR98",
             "H2O-PWR98",
         ]
-        print(species)
         abs_file = f"{ROOT}/catalogue/abs_lines/abs_lines_per_species_zeeman_on.xml"
     else:
         species = [

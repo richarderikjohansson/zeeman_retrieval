@@ -4,60 +4,13 @@ import sys
 import os
 import h5py
 import json
+import sys
+from datetime import datetime
+from utils.hdf import read_hdf5, save_ret
 
 ROOT = sys.argv[1]
 ATMBASE = f"{ROOT}/catalogue/subarctic-winter/subarctic-winter"
 
-
-def read_hdf5(filename):
-    """
-    Function to read hdf5 files
-
-    Parameters:
-    filename (str) : path to the file
-
-    Returns:
-    dictionary (dict): A dictionary with the data
-    """
-
-    with h5py.File(filename, "r") as file:
-        if "kimra_data" in file.keys():
-            dataset = file["kimra_data"]
-
-        else:
-            dataset = file
-
-        dictionary = dict()
-        for key in dataset.keys():  # pyright:ignore
-            try:
-                dictionary[key] = dataset[key][:]  # pyright:ignore
-            except ValueError:
-                dictionary[key] = dataset[key][()]  # pyright:ignore
-
-        return dictionary
-
-
-def save_ret(filename, *argv):
-    """
-    Function to save simulation date in hdf5 file
-
-    Parameters:
-    I (np.array): Intensity of the radiation
-    Q (np.array): Stoke component associated with the linear polarization (vertical and horizontal)
-    U (np.array): Stoke component associated with the linear polarization (45°)
-    V (np.array): Stoke component associated with the circular polarization (right and left hand)
-    f (np.array): Frequency vector
-    azi (float): azimuth angle for the line of sight
-    filename (str): name of the file
-    """
-
-    savepath = f"{ROOT}/data/retrieval"
-    if not os.path.exists(savepath):
-        os.makedirs(savepath)
-
-    with h5py.File(f"{savepath}/{filename}", "w") as file:
-        for data in argv:
-            file[data.name] = data.value
 
 
 def oem_O2_O3(filename, config):
@@ -118,7 +71,13 @@ def oem_O2_O3(filename, config):
     arts.lat_grid = np.linspace(65, 70, 200)
     arts.lon_grid = np.linspace(10, 35, 200)
     arts.z_surfaceConstantAltitude(altitude=460.0)
-    arts.t_surface = x_a[1] + np.ones_like(arts.z_surface.value)
+    if config["get_z_temperature"]:
+        from utils.temperature import get_temperature
+        dt = datetime.strptime(config["dt"], "%y%m%d%H")
+        z_temp = get_temperature(dt)
+        arts.t_surface = z_temp + np.ones_like(arts.z_surface.value)
+    else:
+        arts.t_surface = x_a[1] + np.ones_like(arts.z_surface.value)
 
     ###############################################################################
     # %% Atmosphere
@@ -185,7 +144,7 @@ def oem_O2_O3(filename, config):
     arts.xa = x_a
 
     # Apriori error S_a for temperature
-    Sa = np.zeros(shape=(plen)) + 100
+    Sa = np.zeros(shape=(plen)) + 400 
     arts.retrievalAddTemperature(
         covmat_block=np.diag(Sa),
         covmat_inv_block=np.diag(1 / Sa),
@@ -259,6 +218,7 @@ def oem_O2_O3(filename, config):
     ###############################################################################
     # %% Start OEM
     ###############################################################################
+
     print("OEM started")
     arts.OEM(
         method="lm",
@@ -266,7 +226,6 @@ def oem_O2_O3(filename, config):
         display_progress=1,
         lm_ga_settings=[10, 10, 10, 1000000000000000.0, 1, 100],
     )
-    print("OEM finished")
     ###############################################################################
     # %% Compute Retrieval quantities
     ###############################################################################
@@ -278,6 +237,7 @@ def oem_O2_O3(filename, config):
     arts.x2artsSensor()
 
     save_ret(
+        ROOT,
         config["filename"],
         arts.f_grid,
         arts.xa,
@@ -291,6 +251,8 @@ def oem_O2_O3(filename, config):
         arts.retrieval_ss,
         arts.retrieval_eo,
     )
+    fn = config["filename"].split(".")[0]
+    print(f"OEM finished and saved in {fn}")
 
 
 # --- driver code ---
@@ -298,7 +260,8 @@ configs = [
     f"{ROOT}/data/configs/zeeman_on.json",
     f"{ROOT}/data/configs/zeeman_off.json",
     f"{ROOT}/data/configs/zeeman_on_wrong_component.json",
-           ]
+    f"{ROOT}/data/configs/zeeman_on_ztemperature.json",
+]
 
 file = f"{ROOT}/data/simulation/ycalc_O2_zeeman_on.hdf5"
 for config in configs:
