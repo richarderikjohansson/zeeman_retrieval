@@ -98,7 +98,10 @@ def ycalc(azi):
     ws.propmat_clearsky_agendaAuto()
 
     # %% Grids and planet
-    ws.p_grid = np.logspace(np.log10(105000), np.log10(0.1))
+    p_a = pyarts.xml.load(ROOT + "/data/grids/p_grid_137.xml").value
+    t_raw_iter = pyarts.xml.load(ROOT + "/data/grids/24010418_t.xml")
+    t_raw = [val for val in t_raw_iter]
+    ws.p_grid = p_a
     ws.lat_grid = np.linspace(50, 80)
     ws.lon_grid = np.linspace(10, 30)
     ws.refellipsoidEarth(model="Sphere")
@@ -107,6 +110,12 @@ def ycalc(azi):
 
     # %% Atmosphere
     ws.AtmRawRead(basename=ATMBASE)
+    data = pyarts.arts.GriddedField3(
+        [p_a, [0], [0]],
+        np.array(t_raw).reshape(len(p_a), 1, 1),
+        gridnames=["Pressure", "Latitude", "Longitude"],
+    )
+    ws.t_field_raw = data
     ws.AtmosphereSet3D()
     ws.AtmFieldsCalcExpand1D()
     ws.Touch(ws.wind_u_field)

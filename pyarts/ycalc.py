@@ -1,9 +1,12 @@
-import numpy as np
-import pyarts
-import sys
 import os
-import h5py
+import sys
 from datetime import datetime
+
+from simulation_package.temperature import get_temperature
+import h5py
+import numpy as np
+
+import pyarts
 
 # Global
 ROOT = sys.argv[1]
@@ -12,18 +15,20 @@ START = 233596117200.0
 END = 234296169700.0
 
 sys.path.append(f"{ROOT}/utils")
-from utils.temperature import get_temperature
+
 
 # --- functions ---
-def save_ycalc(I, Q, U, V, f, filename):
+def save_ycalc(I, Q, U, V, f, y, filename):
     """
     Function to save simulation date in hdf5 file
 
     Parameters:
     I (np.array): Intensity of the radiation
-    Q (np.array): Stoke component associated with the linear polarization (vertical and horizontal)
+    Q (np.array): Stoke component associated with the linear polarization
+      (vertical and horizontal)
     U (np.array): Stoke component associated with the linear polarization (45°)
-    V (np.array): Stoke component associated with the circular polarization (right and left hand)
+    V (np.array): Stoke component associated with the circular polarization
+      (right and left hand)
     f (np.array): Frequency vector
     azi (float): azimuth angle for the line of sight
     filename (str): name of the file
@@ -39,6 +44,7 @@ def save_ycalc(I, Q, U, V, f, filename):
         file["U"] = U
         file["V"] = V
         file["f"] = f
+        file["y"] = y
 
 
 def ycalc(zeeman):
@@ -50,9 +56,11 @@ def ycalc(zeeman):
 
     Returns:
     I (np.array): Intensity of the radiation
-    Q (np.array): Stoke component associated with the linear polarization (vertical and horizontal)
+    Q (np.array): Stoke component associated with the linear polarization
+      (vertical and horizontal)
     U (np.array): Stoke component associated with the linear polarization (45°)
-    V (np.array): Stoke component associated with the circular polarization (right and left hand)
+    V (np.array): Stoke component associated with the circular polarization
+      (right and left hand)
     f (np.array): Frequency vector
     azi (float): azimuth angle for the line of sight
     """
@@ -97,7 +105,7 @@ def ycalc(zeeman):
     ws.Touch(ws.abs_lines_per_species)
     ws.ReadXML(
        ws.abs_lines_per_species,
-       abs_file 
+       abs_file
     )
     ws.Wigner6Init()
 
@@ -105,7 +113,6 @@ def ycalc(zeeman):
     ws.propmat_clearsky_agendaAuto()
 
     # %% Grids and planet
-    
     p_a = pyarts.xml.load(ROOT + "/data/grids/p_grid_137.xml").value
     t_raw_iter = pyarts.xml.load(ROOT + "/data/grids/24010418_t.xml")
     t_raw = [val for val in t_raw_iter]
@@ -169,5 +176,6 @@ for b in bools:
     else:
         filename = "ycalc_O2_zeeman_off"
     I, Q, U, V, f = ycalc(zeeman=b)
-    save_ycalc(I, Q, U, V, f, filename)
-
+    y = I-Q
+    noise = np.random.normal(0, 0.08, len(y))
+    save_ycalc(I, Q, U, V, f, y+noise, filename)

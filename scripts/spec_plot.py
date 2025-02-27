@@ -2,79 +2,12 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from utils.hdf import read_hdf5, mm_scaler, get_bound
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
 
 # --- functions ---
 
 
-def read_hdf5(filename):
-    """
-    Function to read hdf5 files
-
-    Parameters:
-    filename (str) : path to the file
-
-    Returns:
-    dictionary (dict): A dictionary with the data
-    """
-
-    with h5py.File(filename, "r") as file:
-        if "kimra_data" in file.keys():
-            dataset = file["kimra_data"]
-
-        else:
-            dataset = file
-
-        dictionary = dict()
-        for key in dataset.keys():  # pyright:ignore
-            try:
-                dictionary[key] = dataset[key][:]  # pyright:ignore
-            except ValueError:
-                dictionary[key] = dataset[key][()]  # pyright:ignore
-
-        return dictionary
-
-
-def mm_scaler(data):
-    """
-    A min max scaler function to scale the normalize the measurements so
-    their features can be distinguished and compared
-
-    Parameters:
-    data (np.array) : The spectra to be normalzed
-
-    Returns:
-
-    (np.array) : The normalized spectra
-
-    """
-
-    minval = min(data)
-    maxval = max(data)
-
-    norm_data = (data - minval) / (maxval - minval)
-    return norm_data
-
-
-def get_bound(data, f0):
-    """
-    Function to get start end end index from frequency where the bandwith is 30 MHz
-    and from a line center
-
-    Parameters:
-    data (np.array) : Frequency vector
-    f0 (float) : Line center
-
-    Returns:
-    s (int) : Start index of slice
-    s (int) : End index of slice
-    """
-
-    f = data - f0
-    s = np.where(f > -1.5e7)[0][0]
-    e = np.where(f > 1.5e7)[0][0]
-
-    return s, e
 
 
 # --- driver code ---

@@ -12,7 +12,6 @@ ROOT = sys.argv[1]
 ATMBASE = f"{ROOT}/catalogue/subarctic-winter/subarctic-winter"
 
 
-
 def oem_O2_O3(filename, config):
     with open(config) as json_file:
         config = json.load(json_file)
@@ -50,10 +49,9 @@ def oem_O2_O3(filename, config):
     arts.Wigner6Init()
     arts.abs_speciesSet(species=config["species"])
     arts.ReadXML(arts.abs_lines_per_species, config["abs_file"])
-    y = data["I"] - data["Q"]
+    y = data["y"]
     f = data["f"]
-    noise = np.random.normal(0, 0.08, len(y))
-    arts.y = y + noise
+    arts.y = y
     arts.f_grid = f
     arts.f_backend = arts.f_grid
     arts.propmat_clearsky_agendaAuto()
@@ -73,6 +71,7 @@ def oem_O2_O3(filename, config):
     arts.z_surfaceConstantAltitude(altitude=460.0)
     if config["get_z_temperature"]:
         from utils.temperature import get_temperature
+
         dt = datetime.strptime(config["dt"], "%y%m%d%H")
         z_temp = get_temperature(dt)
         arts.t_surface = z_temp + np.ones_like(arts.z_surface.value)
@@ -144,7 +143,7 @@ def oem_O2_O3(filename, config):
     arts.xa = x_a
 
     # Apriori error S_a for temperature
-    Sa = np.zeros(shape=(plen)) + 400 
+    Sa = np.zeros(shape=(plen)) + 400
     arts.retrievalAddTemperature(
         covmat_block=np.diag(Sa),
         covmat_inv_block=np.diag(1 / Sa),
@@ -191,14 +190,15 @@ def oem_O2_O3(filename, config):
             ws.AntennaOff()
             ws.Ignore(ws.f_backend)
             ws.sensor_responseInit()
-            ws.sensor_responsePolarisation(instrument_pol=[instrument_pol]) # vertically (pi lines) = 5. horizontally (sigma lines) = 6
+            # vertically (pi lines) = 5. horizontally (sigma lines) = 6
+            ws.sensor_responsePolarisation(instrument_pol=[instrument_pol])
     else:
+
         @pyarts.workspace.arts_agenda(ws=arts, set_agenda=True)
         def sensor_response_agenda(ws):
             ws.AntennaOff()
             ws.Ignore(ws.f_backend)
             ws.sensor_responseInit()
-
 
     arts.sensor_response_agenda.value.execute(arts)
 
@@ -260,7 +260,6 @@ configs = [
     f"{ROOT}/data/configs/zeeman_on.json",
     f"{ROOT}/data/configs/zeeman_off.json",
     f"{ROOT}/data/configs/zeeman_on_wrong_component.json",
-    f"{ROOT}/data/configs/zeeman_on_ztemperature.json",
 ]
 
 file = f"{ROOT}/data/simulation/ycalc_O2_zeeman_on.hdf5"

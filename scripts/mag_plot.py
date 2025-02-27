@@ -1,59 +1,12 @@
-import h5py
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
-import numpy as np
 import matplotlib as mpl
-
-
-def read_hdf5(filename):
-    """
-    Function to read .hdf5 file
-
-    Parameters:
-    filename (str) : path to the file
-
-    Returns:
-    (dct) : dictionary with magnetic field strength and datetime
-
-    """
-    with h5py.File(filename, "r") as file:
-        start = file["start"][()].decode("utf-8")  # pyright:ignore
-        end = file["end"][()].decode("utf-8")  # pyright:ignore
-        bfield = file["B"][:]  # pyright:ignore
-
-        dt = make_date(start, end)
-
-        return {"dt": dt, "bfield": bfield}
-
-
-def make_date(start, end):
-    """
-    Function to create a date range
-
-    Parameters:
-    start (str) : start date of in YYMMDD
-    end (str) : end date in YYMMDD
-
-
-    Returns:
-    date_range (np.array) : numpy array containing datetimes
-    """
-    dt_start = datetime.strptime(start, "%y%m%d")
-    dt_end = datetime.strptime(end, "%y%m%d")
-    date_range = []
-    current_date = dt_start
-
-    while current_date < dt_end:
-        date_range.append(current_date)
-        current_date += timedelta(seconds=1)
-    return np.array(date_range)
+from utils.hdf import read_mag
 
 
 # --- driver code ---
-
-
-bfield = read_hdf5(filename="data/magfield/240104/magfield.hdf5")
+bfield = read_mag(filename="data/magfield/240104/magfield.hdf5")
 
 # fill-boundaries associated with measurement
 fills = {
@@ -78,12 +31,12 @@ fills = {
 # plot magfield strength with fills corresponding to KIMRA measurements
 fig, ax = plt.subplots(figsize=(14, 5))
 formatter = mpl.dates.DateFormatter("%H")  # pyright:ignore
-ylim=(53.000, 53.500)
+ylim = (53.000, 53.500)
 ax.xaxis.set_major_formatter(formatter)
 ax.tick_params(axis="both", labelsize=23)
 ax.set_ylabel(r"B [$\mu T$]", fontsize=25)
 ax.set_xlabel(r"Hours [$CET$]", fontsize=25)
-ax.plot(bfield["dt"], bfield["bfield"]/1e3, color="black")
+ax.plot(bfield["dt"], bfield["bfield"] / 1e3, color="black")
 ax.fill_betweenx(
     y=[ylim[0], ylim[1]],
     x1=mdates.date2num(fills["a"][0]),
@@ -99,14 +52,14 @@ ax.fill_betweenx(
     edgecolor="gray",
 )
 ax.fill_betweenx(
-    y=[ylim[0],ylim[1]],
+    y=[ylim[0], ylim[1]],
     x1=mdates.date2num(fills["c"][0]),
     x2=mdates.date2num(fills["c"][1]),
     color="lightgray",
     edgecolor="gray",
 )
 ax.fill_betweenx(
-    y=[ylim[0],ylim[1]],
+    y=[ylim[0], ylim[1]],
     x1=mdates.date2num(fills["d"][0]),
     x2=mdates.date2num(fills["d"][1]),
     color="lightgray",
