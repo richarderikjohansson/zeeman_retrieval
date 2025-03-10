@@ -15,15 +15,22 @@ Using LINUX/MacOS you can then easily install all the dependencies using mamba o
 mamba env create --name simulation --file environment.yml
 ````
 
-All dependencies will then be installed in the environment "simulation". To activate this environment simply 
+Dependencies will then be installed in the environment "simulation". To activate this environment simply 
 type the following command in your terminal:
 
 ```bash
 mamba activate simulation
 ```
 
-Now you can run the simulation from the terminal with:
+Activate local package from repository root
 
+```bash
+pip install -e .
+```
+
+<!---
+
+Now you can run the simulation from the terminal with:
 ```bash
 python zeeman_ycalc_azi.py
 ```
@@ -117,3 +124,4 @@ The file magfield.hdf5 hold the following
 | bfield            |  magnetic field strength    |   
 | start             |  start date of the measurement|
 | end               |  end date for the measurement|
+-->
