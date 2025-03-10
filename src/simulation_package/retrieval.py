@@ -2,7 +2,7 @@ import pyarts
 import numpy as np
 import h5py
 import os
-from make_grids import make_atm_grids, get_git_root
+from simulation_package.make_grids import make_atm_grids, get_git_root
 from simulation_package.hdf import read_hdf5, DottedDict
 
 
@@ -81,7 +81,7 @@ class Retrieval:
 
         self.arts.stokes_dim = 4
         self.arts.sensor_pos = [[self.z0 + 20, 67.84, 20.22]]
-        self.arts.sensor_los = [[30, 90]]
+        self.arts.sensor_los = [[45, 90]]
         self.arts.f_backend = self.arts.f_grid
         self.arts.Touch(self.arts.sensor_time)
         self.arts.sensorOff()
