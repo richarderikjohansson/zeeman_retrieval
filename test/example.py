@@ -18,5 +18,3 @@ data = DottedDict({
     "kimra": read_hdf5(f"{get_git_root()}/data/retrieval/kimra_example.hdf5"),
     "tempera": read_hdf5(f"{get_git_root()}/data/retrieval/tempera_example.hdf5"),
 })
-
-print(data.kimra.y)
