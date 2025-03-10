@@ -2,6 +2,9 @@ README.md
 pyproject.toml
 src/simulation_package/__init__.py
 src/simulation_package/hdf.py
+src/simulation_package/make_grids.py
+src/simulation_package/plot.py
+src/simulation_package/retrieval.py
 src/simulation_package/temperature.py
 src/simulation_package.egg-info/PKG-INFO
 src/simulation_package.egg-info/SOURCES.txt

@@ -1,4 +1,4 @@
 local
 __pycache__
 *.hdf5
-dist
+run.sh
