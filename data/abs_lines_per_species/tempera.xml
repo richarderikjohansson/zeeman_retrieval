@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <arts format="binary" version="1">
-<Array type="ArrayOfAbsorptionLines" nelem="5">
+<Array type="ArrayOfAbsorptionLines" nelem="4">
 <Array type="AbsorptionLines" nelem="3">
 <comment>
 Lines meta-data:
@@ -87,8 +87,6 @@ Lines meta-data:
 </comment>
 <AbsorptionLines version="2" id="O2-68 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0" nlines="1" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="J N" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
 </AbsorptionLines>
-</Array>
-<Array type="AbsorptionLines" nelem="0">
 </Array>
 <Array type="AbsorptionLines" nelem="0">
 </Array>
