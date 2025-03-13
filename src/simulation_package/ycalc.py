@@ -81,12 +81,14 @@ def set_line(ws, line, flen, zeeman):
     return ws
 
 
-def set_atm_grids(start):
-    grids = make_atm_grids(start=0)
+def set_atm_grids(start, disturb_flag=False, index=None):
+    grids = make_atm_grids(start=0, disturb_flag=disturb_flag, index=index)
     return grids
 
 
-def ycalc_zeeman(zenith, azimuth, zeeman, line, filename, ecmwf=True):
+def ycalc_zeeman(
+    zenith, azimuth, zeeman, line, filename, ecmwf=True, disturb_flag=False, index=None
+):
     ARTS_CAT, ARTS_XML = set_arts_path()
     ATMBASE = f"{ARTS_XML}/planets/Earth/Fascod/subarctic-winter/subarctic-winter"
     LAT = 67.8
@@ -96,7 +98,7 @@ def ycalc_zeeman(zenith, azimuth, zeeman, line, filename, ecmwf=True):
     ws = pyarts.workspace.Workspace()
     ws = set_line(ws=ws, line=line, flen=FLEN, zeeman=zeeman)
     abs_lines_per_species_file = set_abs_file(line=line)
-    grids = set_atm_grids(start=0)
+    grids = set_atm_grids(start=0, disturb_flag=disturb_flag, index=index)
 
     ws.ppath_agendaSet(option="FollowSensorLosPath")
     ws.iy_main_agendaSet(option="Emission")
@@ -159,9 +161,7 @@ def ycalc_zeeman(zenith, azimuth, zeeman, line, filename, ecmwf=True):
     try:
         ws.lbl_checkedCalc()
     except RuntimeError:
-        ws.abs_lines_per_speciesReadSpeciesSplitCatalog(
-            basename=f"{ARTS_CAT}/lines/"
-        )
+        ws.abs_lines_per_speciesReadSpeciesSplitCatalog(basename=f"{ARTS_CAT}/lines/")
         ws.WriteXML(
             output_file_format="binary",
             input=ws.abs_lines_per_species,

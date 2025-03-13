@@ -11,7 +11,7 @@ def get_git_root():
         return None  # Not inside a Git repo
 
 
-def make_atm_grids(start):
+def make_atm_grids(start, disturb_flag=False, index=None):
     grids_path = f"{get_git_root()}/data/grids"
     z = pyarts.xml.load(f"{grids_path}/24010418_z.xml")
     t = pyarts.xml.load(f"{grids_path}/24010418_t.xml")
@@ -31,7 +31,7 @@ def make_atm_grids(start):
     )
 
     s = np.where(grids.altitude >= start)[0][0]
-    skip_troposphere = DottedDict(
+    altered_grids = DottedDict(
         {
             "temperature": grids.temperature[s:],
             "altitude": grids.altitude[s:],
@@ -40,4 +40,11 @@ def make_atm_grids(start):
             "plen": len(grids.pressure[s:])
         }
     )
-    return skip_troposphere
+    if disturb_flag and index is not None:
+        altered_grids = distrub(altered_grids, index)
+    return altered_grids
+
+
+def distrub(grids, index):
+    grids.temperature[index] += 5
+    return grids

@@ -1,4 +1,5 @@
 local
 __pycache__
 *.hdf5
+*.pdf
 run.sh
