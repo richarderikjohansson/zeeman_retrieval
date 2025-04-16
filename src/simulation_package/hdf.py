@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 import h5py
 import numpy as np
-import pandas as pd
 
 
 class DottedDict:
@@ -31,9 +30,7 @@ class DottedDict:
     def __getattr__(self, name):
         if name in self.__dict__:
             return self.__dict__[name]
-        raise AttributeError(
-            f"'{self.__class__.__name__}' object has no attribute '{name}'"
-        )
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def __setattr__(self, name, value):
         self.__dict__[name] = value
@@ -54,17 +51,15 @@ class DottedDict:
         return self.__dict__
 
 
-def read_hdf5(filename):
-    """
-    Function to read hdf5 files
+def read_hdf5(filename: str) -> dict:
+    """Function to read HDF5 file
 
-    Parameters:
-    filename (str) : path to the file
+    Args:
+        filename: Name of the file
 
     Returns:
-    dictionary (dict): A dictionary with the data
+       Dictionary with key value pairs with data
     """
-
     with h5py.File(filename, "r") as file:
         if "kimra_data" in file.keys():
             dataset = file["kimra_data"]
@@ -81,16 +76,14 @@ def read_hdf5(filename):
         return dictionary
 
 
-def read_mag(filename):
-    """
-    Function to read .hdf5 file
+def read_mag(filename: str) -> dict:
+    """Function to read magnetic field data
 
-    Parameters:
-    filename (str) : path to the file
+    Args:
+        filename: Name of the file
 
     Returns:
-    (dct) : dictionary with magnetic field strength and datetime
-
+        Dictionary with key value pairs with data
     """
     with h5py.File(filename, "r") as file:
         start = file["start"][()].decode("utf-8")  # pyright:ignore
@@ -102,15 +95,13 @@ def read_mag(filename):
         return {"dt": dt, "bfield": bfield}
 
 
-def save_ret(ROOT, filename, *argv):
-    """
-    Function to save retrieval data in hdf5 file in data/retrieval in current working directory
+def save_ret(ROOT: str, filename: str, *argv) -> None:
+    """Function to save retrieval data
 
-    Parameters:
-    filename (str): name of the file
-    argv (pyarts.arts.Workspace.variable): workspace variables we want to save
+    Args:
+        ROOT: File path to repository base
+        filename: Save name of the data with retrieval
     """
-
     savepath = f"{ROOT}/data/retrieval"
     if not os.path.exists(savepath):
         os.makedirs(savepath)
@@ -120,18 +111,14 @@ def save_ret(ROOT, filename, *argv):
             file[data.name] = data.value
 
 
-def mm_scaler(data):
-    """
-    A min max scaler function to scale the normalize the measurements so
-    their features can be distinguished and compared
+def mm_scaler(data: np.ndarray) -> np.ndarray:
+    """Scaling data [0,1]
 
-    Parameters:
-    data (np.array) : The spectra to be normalzed
+    Args:
+        data: Array with data
 
     Returns:
-
-    (np.array) : The normalized spectra
-
+        Scaled data
     """
 
     minval = min(data)
@@ -141,20 +128,19 @@ def mm_scaler(data):
     return norm_data
 
 
-def get_bound(data, f0):
-    """
-    Function to get start end end index from frequency where the bandwith is 30 MHz
-    and from a line center
+def get_bound(data: np.ndarray, f0: float) -> tuple:
+    """Function to get indexes
 
-    Parameters:
-    data (np.array) : Frequency vector
-    f0 (float) : Line center
+    Get indexes +- 15 Mhz from line center f0 for the frequency array
+    data
+
+    Args:
+        data: Frequency array
+        f0: Line center
 
     Returns:
-    s (int) : Start index of slice
-    s (int) : End index of slice
+        Tuple with start and end indexes
     """
-
     f = data - f0
     s = np.where(f > -1.5e7)[0][0]
     e = np.where(f > 1.5e7)[0][0]
@@ -162,17 +148,18 @@ def get_bound(data, f0):
     return s, e
 
 
-def make_date(start, end):
-    """
-    Function to create a date range
+def make_date(start: str, end: str) -> np.ndarray:
+    """Function to make datetime range
 
-    Parameters:
-    start (str) : start date of in YYMMDD
-    end (str) : end date in YYMMDD
+    Creates a datetime range from a start date 'start' to an
+    end date 'end' with 1 second increments
 
+    Args:
+        start: Start date
+        end: End date
 
     Returns:
-    date_range (np.array) : numpy array containing datetimes
+        Array with datetime values
     """
     dt_start = datetime.strptime(start, "%y%m%d")
     dt_end = datetime.strptime(end, "%y%m%d")
@@ -183,37 +170,3 @@ def make_date(start, end):
         date_range.append(current_date)
         current_date += timedelta(seconds=1)
     return np.array(date_range)
-
-
-def grab_mag(filename, start_gmt, end_gmt, start, end, save_name):
-    """
-    Function to parse magnetic field data and save data in .hdf5 format
-
-    Parameters:
-    filename (str) : path to the file
-    start_gmt (datetime) : start of data in CET
-    start_gmt (datetime) : end of data in CET
-    start (str) : start date for data
-    end (str) : end date for data
-    save_name (str) : path where the .hdf5 file should be saved
-
-    """
-
-    df = pd.read_csv(filename, skiprows=12, sep="\s+")
-
-    dt = []
-    for date, time in zip(df["DATE"], df["TIME"]):
-        hms = time.split(".")[0]
-        dt.append(datetime.strptime(f"{date} {hms}", "%Y-%m-%d %H:%M:%S"))
-
-    B = np.array([b for b in df["KIRF"]])
-
-    # magfield in UTC spec in CET need to get correct data
-    s = np.where(np.array(dt) >= start_gmt)[0][0]
-    e = np.where(np.array(dt) >= end_gmt)[0][0]
-
-    # save data between as .hdf5
-    with h5py.File(f"{save_name}.hdf5", "w") as file:
-        file["B"] = B[s:e]
-        file["start"] = start
-        file["end"] = end

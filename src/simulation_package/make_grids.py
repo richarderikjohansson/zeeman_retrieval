@@ -1,22 +1,37 @@
 import pyarts
 import numpy as np
 from simulation_package.hdf import DottedDict
-import subprocess
+from simulation_package.files import find_file
 
 
-def get_git_root():
-    try:
-        return subprocess.check_output(["git", "rev-parse", "--show-toplevel"], universal_newlines=True).strip()
-    except subprocess.CalledProcessError:
-        return None  # Not inside a Git repo
+def make_atm_grids(
+    start: float,
+    disturb_flag: bool = False,
+    index: int | None = None,
+) -> DottedDict:
+    """Function to make atmospheric grids
 
+    Args:
+        start: Start altitude
+        disturb_flag: Boolean if disturbance should be used
+        index: Index of where disturbance should be done
 
-def make_atm_grids(start, disturb_flag=False, index=None):
-    grids_path = f"{get_git_root()}/data/grids"
-    z = pyarts.xml.load(f"{grids_path}/24010418_z.xml")
-    t = pyarts.xml.load(f"{grids_path}/24010418_t.xml")
-    p = pyarts.xml.load(f"{grids_path}/p_grid_137.xml")
-    apriori = pyarts.xml.load(f"{grids_path}/ECMWF_jan.xml")
+    Returns:
+        DottedDict object with grids
+    """
+
+    z = pyarts.xml.load(
+        str(find_file(filename="24010418_z.xml", skip="local")),
+    )
+    t = pyarts.xml.load(
+        str(find_file(filename="24010418_t.xml", skip="local")),
+    )
+    p = pyarts.xml.load(
+        str(find_file(filename="p_grid_137.xml", skip="local")),
+    )
+    apriori = pyarts.xml.load(
+        str(find_file(filename="ECMWF_jan.xml", skip="local")),
+    )
 
     z = z.to_dict()["data"]
     t = t.to_dict()["data"]
@@ -37,7 +52,7 @@ def make_atm_grids(start, disturb_flag=False, index=None):
             "altitude": grids.altitude[s:],
             "pressure": grids.pressure[s:],
             "apriori": grids.apriori[s:],
-            "plen": len(grids.pressure[s:])
+            "plen": len(grids.pressure[s:]),
         }
     )
     if disturb_flag and index is not None:

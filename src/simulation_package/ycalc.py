@@ -1,29 +1,26 @@
 import pyarts
 import os
 import numpy as np
-from simulation_package.make_grids import make_atm_grids, get_git_root
+from simulation_package.make_grids import make_atm_grids
+from simulation_package.files import find_file, find_dir
 import h5py
 
 
 def set_abs_file(line):
-    abs_lines_per_species_path = f"{get_git_root()}/data/abs_lines_per_species"
-
     match line:
         case "tempera":
-            abs_lines_per_species_file = f"{abs_lines_per_species_path}/tempera.xml"
+            abs_lines_per_species_file = find_file(filename="tempera.xml")
         case "kimra":
-            abs_lines_per_species_file = f"{abs_lines_per_species_path}/kimra.xml"
+            abs_lines_per_species_file = find_file(filename="kimra.xml")
     return abs_lines_per_species_file
 
 
-def save_ycalc(zenith, sI, sQ, sU, sV, directory, filename, *argv):
-    savepath = f"{get_git_root()}/data/simulated_spectras/{directory}/"
-    if not os.path.exists(savepath):
-        os.makedirs(savepath)
-
+def save_ycalc(zenith, azimuth, sI, sQ, sU, sV, filename, *argv):
+    savepath = find_dir(dirname="simulation")
     with h5py.File(f"{savepath}/{filename}", "w") as file:
         for data in argv:
             file[data.name] = data.value
+        file["azimuth"] = azimuth
         file["za"] = zenith
         file["sI"] = sI
         file["sQ"] = sQ
@@ -51,11 +48,8 @@ def set_jacobian(ws, pressure, latitude, longitude):
 
 
 def set_line(ws, line, flen, zeeman):
-    match line:
-        case "tempera":
-            f = np.linspace(5.3546e10, 5.3646e10, flen)
-        case "kimra":
-            f = np.linspace(23.35e10, 23.45e10, flen)
+    f0 = 233.9461e9
+    f = np.linspace(f0 - 15e6, f0 + 15e6, flen)
 
     start = f[0]
     stop = f[-1]
@@ -87,7 +81,7 @@ def set_atm_grids(start, disturb_flag=False, index=None):
 
 
 def ycalc_zeeman(
-    zenith, azimuth, zeeman, line, filename, ecmwf=True, disturb_flag=False, index=None
+    zenith, azimuth, zeeman, line, filename, disturb_flag=False, index=None
 ):
     ARTS_CAT, ARTS_XML = set_arts_path()
     ATMBASE = f"{ARTS_XML}/planets/Earth/Fascod/subarctic-winter/subarctic-winter"
@@ -115,7 +109,7 @@ def ycalc_zeeman(
     ws.nlteOff()
 
     ws.Wigner6Init()
-    ws.ReadXML(ws.abs_lines_per_species, abs_lines_per_species_file)
+    ws.ReadXML(ws.abs_lines_per_species, str(abs_lines_per_species_file))
     ws.propmat_clearsky_agendaAuto()
 
     ws.p_grid = grids.pressure
@@ -124,17 +118,13 @@ def ycalc_zeeman(
     ws.refellipsoidEarth(model="Sphere")
 
     ws.AtmRawRead(basename=ATMBASE)
-    if ecmwf:
-        data = pyarts.arts.GriddedField3(
-            [grids.pressure, [0], [0]],
-            np.array(grids.temperature).reshape(grids.plen, 1, 1),
-            gridnames=["Pressure", "Latitude", "Longitude"],
-        )
+    data = pyarts.arts.GriddedField3(
+        [grids.pressure, [0], [0]],
+        np.array(grids.temperature).reshape(grids.plen, 1, 1),
+        gridnames=["Pressure", "Latitude", "Longitude"],
+    )
 
-        ws.t_field_raw = data
-        directory = "ECMWF"
-    else:
-        directory = "FASCOD"
+    ws.t_field_raw = data
 
     ws.AtmosphereSet3D()
     ws.AtmFieldsCalcExpand1D()
@@ -165,7 +155,7 @@ def ycalc_zeeman(
         ws.WriteXML(
             output_file_format="binary",
             input=ws.abs_lines_per_species,
-            filename=abs_lines_per_species_file,
+            filename=str(abs_lines_per_species_file),
         )
     ws.lbl_checkedCalc()
     ws.atmfields_checkedCalc()
@@ -190,11 +180,11 @@ def ycalc_zeeman(
 
     save_ycalc(
         zenith,
+        azimuth,
         sI,
         sQ,
         sU,
         sV,
-        directory,
         filename,
         ws.f_grid,
         ws.jacobian,

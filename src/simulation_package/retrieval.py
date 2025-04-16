@@ -2,14 +2,16 @@ import pyarts
 import numpy as np
 import h5py
 import os
-from simulation_package.make_grids import make_atm_grids, get_git_root
+from simulation_package.files import find_file, find_dir
+from simulation_package.make_grids import make_atm_grids
 from simulation_package.hdf import read_hdf5, DottedDict
 
 
 class Retrieval:
-    def __init__(self, line, start=0, recalc=False):
+    def __init__(self, line, start=0, recalc=False, zeeman=True):
         self.arts = pyarts.workspace.Workspace()
         self.line = line
+        self.zeeman = zeeman
         self.set_arts_path()
         self.set_frequency_grid()
         self.set_species()
@@ -41,9 +43,11 @@ class Retrieval:
 
         match self.line:
             case "tempera":
-                f = np.linspace(5.3546e10, 5.3646e10, self.flen)
+                f0 = 53.066906e9
+                f = np.linspace(f0-300e6, f0+300e6, self.flen)
             case "kimra":
-                f = np.linspace(23.35e10, 23.45e10, self.flen)
+                f0 = 233.9461e9
+                f = np.linspace(f0 - 300e6, f0 + 300e6, self.flen)
 
         self.start = f[0]
         self.stop = f[-1]
@@ -79,23 +83,37 @@ class Retrieval:
             self.arts.z_surface.value
         )
 
-        self.arts.stokes_dim = 4
+        if self.zeeman:
+            self.arts.stokes_dim = 4
+        else:
+            self.arts.stokes_dim = 1
+
         self.arts.sensor_pos = [[self.z0 + 20, 67.84, 20.22]]
-        self.arts.sensor_los = [[45, 90]]
+        self.arts.sensor_los = [[77.6, 90]]
         self.arts.f_backend = self.arts.f_grid
         self.arts.Touch(self.arts.sensor_time)
         self.arts.sensorOff()
 
     def set_species(self):
-        self.arts.abs_speciesSet(
-            species=[
-                f"O2-Z-*-{self.start - 1}-{self.stop + 1}",
-                f"O2-*-{self.start - 1}-{self.stop + 1}",
-                f"O3-*-{self.start - 1}-{self.stop + 1}",
-                "N2-SelfContStandardType",
-                "H2O-PWR98",
-            ]
-        )
+        if self.zeeman:
+            self.arts.abs_speciesSet(
+                species=[
+                    f"O2-Z-*-{self.start - 1}-{self.stop + 1}",
+                    f"O2-*-{self.start - 1}-{self.stop + 1}",
+                    f"O3-*-{self.start - 1}-{self.stop + 1}",
+                    "N2-SelfContStandardType",
+                    "H2O-PWR98",
+                ]
+            )
+        else:
+            self.arts.abs_speciesSet(
+                species=[
+                    f"O2-*-{self.start - 1}-{self.stop + 1}",
+                    f"O3-*-{self.start - 1}-{self.stop + 1}",
+                    "N2-SelfContStandardType",
+                    "H2O-PWR98",
+                ]
+            )
 
     def set_agendas(self):
         self.arts.water_p_eq_agendaSet(option="MK05")
@@ -118,17 +136,11 @@ class Retrieval:
         self.arts.nlteOff()
 
     def set_abs_file(self):
-        abs_lines_per_species_path = f"{get_git_root()}/data/abs_lines_per_species"
-
         match self.line:
             case "tempera":
-                self.abs_lines_per_species_file = (
-                    f"{abs_lines_per_species_path}/tempera.xml"
-                )
+                self.abs_lines_per_species_file = find_file(filename="tempera.xml")
             case "kimra":
-                self.abs_lines_per_species_file = (
-                    f"{abs_lines_per_species_path}/kimra.xml"
-                )
+                self.abs_lines_per_species_file = find_file(filename="kimra.xml")
 
     def propmat(self, recalc=False):
         if recalc:
@@ -139,11 +151,11 @@ class Retrieval:
             self.arts.WriteXML(
                 input=self.arts.abs_lines_per_species,
                 output_file_format="binary",
-                filename=self.abs_lines_per_species_file,
+                filename=str(self.abs_lines_per_species_file),
             )
         else:
             self.arts.ReadXML(
-                self.arts.abs_lines_per_species, self.abs_lines_per_species_file
+                self.arts.abs_lines_per_species, str(self.abs_lines_per_species_file)
             )
         self.arts.propmat_clearsky_agendaAuto()
 
@@ -161,8 +173,8 @@ class Retrieval:
         self.arts.z_fieldFromHSE()
 
     def do_yCalc(self, recalc=False):
-        self.ycalc_path = f"{get_git_root()}/data/simulated_spectras"
-        self.ycalc_file_path = f"{self.ycalc_path}/{self.line}.hdf5"
+        self.ycalc_path = find_dir(dirname="simulation")
+        self.ycalc_file_path = f"{self.ycalc_path}/retrieval_yc.hdf5"
 
         if recalc:
             print(f"Start ycalc for {self.line} line")
@@ -173,34 +185,42 @@ class Retrieval:
         if not os.path.exists(self.ycalc_path):
             os.makedirs(self.ycalc_path)
 
-        I = self.arts.y.value[0::4]
-        Q = self.arts.y.value[1::4]
-        U = self.arts.y.value[2::4]
-        V = self.arts.y.value[3::4]
-        f = self.arts.f_grid.value
+        if self.zeeman:
+            I = self.arts.y.value[0::4]
+            Q = self.arts.y.value[1::4]
+            U = self.arts.y.value[2::4]
+            V = self.arts.y.value[3::4]
+            f = self.arts.f_grid.value
 
-        self.ycalc_file_path = f"{self.ycalc_path}/{self.line}.hdf5"
-        y = I - Q + np.random.normal(loc=0, scale=0.3, size=self.flen)
+            self.ycalc_file_path = f"{self.ycalc_path}/{self.line}.hdf5"
+            y = I - Q
 
-        with h5py.File(self.ycalc_file_path, "w") as file:
-            file["I"] = I
-            file["Q"] = Q
-            file["U"] = U
-            file["V"] = V
-            file["f"] = f
-            file["y"] = y
+            with h5py.File(self.ycalc_file_path, "w") as file:
+                file["I"] = I
+                file["Q"] = Q
+                file["U"] = U
+                file["V"] = V
+                file["f"] = f
+                file["y"] = y
+        else:
+            f = self.arts.f_grid.value
+            y = self.arts.y.value
+            with h5py.File(self.ycalc_file_path, "w") as file:
+                file["y"] = y
+                file["f"] = f
 
     def init_retrieval(self):
         self.arts.retrievalDefInit()
         ycalc = DottedDict(read_hdf5(filename=self.ycalc_file_path))
-        self.arts.y = ycalc.y
+        noise = np.random.normal(loc=0, scale=0.1667, size=ycalc.y.shape)
+        y = ycalc.y + noise
+        self.arts.y = y
         self.arts.yf = []
         self.arts.x = []
         self.arts.jacobian = []
         self.arts.xa = self.atm.apriori
 
     def set_errors(self):
-
         # apriori error
         Sa = np.zeros(shape=(self.atm.plen)) + 100
         self.arts.retrievalAddTemperature(
@@ -226,11 +246,15 @@ class Retrieval:
         )
 
         # Add Baseline error to S_a
-        self.arts.covmat_sxAddBlock(block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 100)))
+        self.arts.covmat_sxAddBlock(
+            block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 100))
+        )
         self.arts.covmat_sxAddInverseBlock(
             block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 1 / 100))
         )
-        self.arts.covmat_sxAddBlock(block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 25)))
+        self.arts.covmat_sxAddBlock(
+            block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 25))
+        )
         self.arts.covmat_sxAddInverseBlock(
             block=pyarts.arts.Sparse(np.diag(np.zeros(shape=(1)) + 1 / 25))
         )
@@ -242,12 +266,21 @@ class Retrieval:
         self.arts.retrievalDefClose()
 
     def config_sensor_and_iter_agendas(self):
-        @pyarts.workspace.arts_agenda(ws=self.arts, set_agenda=True)
-        def sensor_response_agenda(ws):
-            ws.AntennaOff()
-            ws.Ignore(ws.f_backend)
-            ws.sensor_responseInit(sensor_norm=1)
-            ws.sensor_responsePolarisation(instrument_pol=[6])
+        if self.zeeman:
+
+            @pyarts.workspace.arts_agenda(ws=self.arts, set_agenda=True)
+            def sensor_response_agenda(ws):
+                ws.AntennaOff()
+                ws.Ignore(ws.f_backend)
+                ws.sensor_responseInit(sensor_norm=1)
+                ws.sensor_responsePolarisation(instrument_pol=[6])
+        else:
+
+            @pyarts.workspace.arts_agenda(ws=self.arts, set_agenda=True)
+            def sensor_response_agenda(ws):
+                ws.AntennaOff()
+                ws.Ignore(ws.f_backend)
+                ws.sensor_responseInit(sensor_norm=1)
 
         self.arts.sensor_response_agenda.value.execute(self.arts)
 
@@ -290,10 +323,7 @@ class Retrieval:
         )
 
     def save_ret(self, *argv):
-        savepath = f"{get_git_root()}/data/retrieval"
-        if not os.path.exists(savepath):
-            os.makedirs(savepath)
-
+        savepath = find_dir(dirname="simulation")
         with h5py.File(f"{savepath}/{self.retrieval_filename}", "w") as file:
             for data in argv:
                 file[data.name] = data.value
