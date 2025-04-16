@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<arts format="binary" version="1">
+<Array type="ArrayOfAbsorptionLines" nelem="5">
+<Array type="AbsorptionLines" nelem="4">
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O2-67
+		Identity: O2-67 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 36 lines available.
+	The front line has:
+		f0: 5.28002e+10 Hz
+		i0: 1.97348e-24 m^2/Hz
+		e0: 2.40465e-20 J
+		Lower stat. weight: 56 [-]
+		Upper stat. weight: 56 [-]
+		A: 3.057e-12 1/s
+		Zeeman splitting of lower state: 0 [-]
+		Zeeman splitting of upper state: 0 [-]
+		Local quantum numbers: F 55/2 55/2 J 29 28 N 29 29
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 10355.5 * (296/T)^0.72 + VMR(AIR) * 10296.4 * (296/T)^0.72
+</comment>
+<AbsorptionLines version="2" id="O2-67 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0" nlines="36" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="F J N" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O2-68
+		Identity: O2-68 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 2 lines available.
+	The front line has:
+		f0: 5.29036e+10 Hz
+		i0: 2.75501e-21 m^2/Hz
+		e0: 2.34025e-20 J
+		Lower stat. weight: 57 [-]
+		Upper stat. weight: 59 [-]
+		A: 5.939e-10 1/s
+		Zeeman splitting of lower state: -0.0689804 [-]
+		Zeeman splitting of upper state: 0.002427 [-]
+		Local quantum numbers: J 29 28 N 29 29
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 10355.5 * (296/T)^0.72 + VMR(AIR) * 10296.4 * (296/T)^0.72
+</comment>
+<AbsorptionLines version="2" id="O2-68 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0" nlines="2" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="J N" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O2-66
+		Identity: O2-66 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 1 lines available.
+	The front line has:
+		f0: 5.30669e+10 Hz
+		i0: 8.58175e-21 m^2/Hz
+		e0: 2.15218e-20 J
+		Lower stat. weight: 53 [-]
+		Upper stat. weight: 55 [-]
+		A: 5.994e-10 1/s
+		Zeeman splitting of lower state: -0.0741097 [-]
+		Zeeman splitting of upper state: 0.0027641 [-]
+		Local quantum numbers: J 27 26 N 27 27
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 10651.4 * (296/T)^0.72 + VMR(AIR) * 10355.5 * (296/T)^0.72
+			Y ~ VMR(SELF) * (-6.10177e-05 + 8.60934e-07 * T  + -3.28726e-09 * T * T + 3.95707e-12 * T * T * T) + VMR(AIR) * (-4.8573e-05 + 7.10644e-07 * T  + -2.73289e-09 * T * T + 3.29474e-12 * T * T * T)
+</comment>
+<AbsorptionLines version="2" id="O2-66 ElecStateLabel X X Lambda 0 0 S 1 1 v 0 0" nlines="1" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="J N" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1 Y POLY POLY">
+</AbsorptionLines>
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O2-66
+		Identity: O2-66 ElecStateLabel X X Lambda 0 0 S 1 1 v 1 1
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 1 lines available.
+	The front line has:
+		f0: 5.31887e+10 Hz
+		i0: 4.73517e-24 m^2/Hz
+		e0: 5.22012e-20 J
+		Lower stat. weight: 53 [-]
+		Upper stat. weight: 55 [-]
+		A: 6.036e-10 1/s
+		Zeeman splitting of lower state: 0 [-]
+		Zeeman splitting of upper state: 0 [-]
+		Local quantum numbers: J 27 26 N 27 27
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 10651.4 * (296/T)^0.72 + VMR(AIR) * 10355.5 * (296/T)^0.72
+</comment>
+<AbsorptionLines version="2" id="O2-66 ElecStateLabel X X Lambda 0 0 S 1 1 v 1 1" nlines="1" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="J N" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+</Array>
+<Array type="AbsorptionLines" nelem="0">
+</Array>
+<Array type="AbsorptionLines" nelem="3">
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O3-676
+		Identity: O3-676 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 6 lines available.
+	The front line has:
+		f0: 5.29828e+10 Hz
+		i0: 7.80338e-20 m^2/Hz
+		e0: 1.26074e-20 J
+		Lower stat. weight: 78 [-]
+		Upper stat. weight: 76 [-]
+		A: 4.41e-08 1/s
+		Zeeman splitting of lower state: 0 [-]
+		Zeeman splitting of upper state: 0 [-]
+		Local quantum numbers: F 75/2 77/2 J 35 36 Ka 6 5 Kc 30 31
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 26924.4 * (296/T)^0.82 + VMR(AIR) * 20681.5 * (296/T)^0.82
+</comment>
+<AbsorptionLines version="2" id="O3-676 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0" nlines="6" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="F J Ka Kc" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O3-668
+		Identity: O3-668 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 1 lines available.
+	The front line has:
+		f0: 5.30513e+10 Hz
+		i0: 7.38425e-19 m^2/Hz
+		e0: 5.68692e-21 J
+		Lower stat. weight: 51 [-]
+		Upper stat. weight: 49 [-]
+		A: 4.157e-08 1/s
+		Zeeman splitting of lower state: 0 [-]
+		Zeeman splitting of upper state: 0 [-]
+		Local quantum numbers: J 24 25 Ka 4 3 Kc 20 23
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 29291.3 * (296/T)^0.79 + VMR(AIR) * 21569.1 * (296/T)^0.79
+</comment>
+<AbsorptionLines version="2" id="O3-668 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0" nlines="1" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="J Ka Kc" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+<comment>
+Lines meta-data:
+	Species identity:
+		Species: O3-667
+		Identity: O3-667 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0
+	No cut-off will be applied.
+	The lines are considered as in pure LTE.
+	Simple frequency scaling of the far-wings will be applied, i.e. F ~ (f / f0) * ((1 - exp(- hf / kT)) / (1 - exp(- hf0 / kT)))
+	The line shape type is the Voigt profile.
+	These lines are not mirrored at 0 Hz.
+	The reference temperature for all line parameters is 296 K.
+	If applicable, there is no line mixing limit.
+	There are 6 lines available.
+	The front line has:
+		f0: 5.31294e+10 Hz
+		i0: 8.65602e-21 m^2/Hz
+		e0: 1.97672e-20 J
+		Lower stat. weight: 98 [-]
+		Upper stat. weight: 96 [-]
+		A: 4.533e-08 1/s
+		Zeeman splitting of lower state: 0 [-]
+		Zeeman splitting of upper state: 0 [-]
+		Local quantum numbers: F 95/2 97/2 J 45 46 Ka 7 6 Kc 39 40
+		Line shape parameters (are normalized by sum(VMR)):
+			G0 ~ VMR(SELF) * 24557.4 * (296/T)^0.76 + VMR(AIR) * 20503.9 * (296/T)^0.76
+</comment>
+<AbsorptionLines version="2" id="O3-667 ElecStateLabel X X v1 0 0 v2 0 0 v3 0 0" nlines="6" cutofftype="None" mirroringtype="None" populationtype="LTE" normalizationtype="SFS" lineshapetype="VP" T0="296" cutofffreq="7.5e+11" linemixinglimit="-1" localquanta="F J Ka Kc" broadeningspecies="SELF AIR" temperaturemodes="G0 T1 T1">
+</AbsorptionLines>
+</Array>
+<Array type="AbsorptionLines" nelem="0">
+</Array>
+<Array type="AbsorptionLines" nelem="0">
+</Array>
+</Array>
+</arts>
